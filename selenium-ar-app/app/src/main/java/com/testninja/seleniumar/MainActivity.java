@@ -125,12 +125,11 @@ public class MainActivity extends AppCompatActivity {
 
                 @Override
                 public void call(Object... args) {
-
+                    Bitmap image = convertBase64ToBitMap(args[0].toString()); //args[0] holds the base64 encoded screenshot of the browser
                     /* To avoid screen freeze, render the image after a delay*/
                     view.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            Bitmap image = convertBase64ToBitMap(args[0].toString()); //args[0] holds the base64 encoded screenshot of the browser
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {

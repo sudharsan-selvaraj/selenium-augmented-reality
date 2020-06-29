@@ -1,32 +1,34 @@
 import com.corundumstudio.socketio.*;
 import com.corundumstudio.socketio.listener.ConnectListener;
-import com.corundumstudio.socketio.listener.DataListener;
 import com.corundumstudio.socketio.listener.DisconnectListener;
 import com.testninja.selenium.TRexGameBot;
 
 public class SocketServer {
 
     private static Boolean isGameStarted = false;
+    private static final String HOST = "0.0.0.0";
+    private static final int PORT = 9093;
 
     public static void main(String[] args) throws Exception {
 
         /* Set the system property with the path to chromedriver executable file */
-        System.setProperty("webdriver.chrome.driver", "/Users/sudharsan/Documents/Applications/chromedriver");
+        System.setProperty("webdriver.chrome.driver", "path/to/chrome/driver");
+
         Configuration config = new Configuration();
-        config.setHostname("0.0.0.0");
-        config.setPort(9093);
+        config.setHostname(HOST);
+        config.setPort(PORT);
 
         TRexGameBot bot = new TRexGameBot();
 
-        final SocketIOServer server = new SocketIOServer(config);
-        server.addEventListener("start", Object.class, new DataListener<Object>() {
+        SocketIOServer server = new SocketIOServer(config);
+        server.addConnectListener(new ConnectListener() {
             @Override
-            public void onData(SocketIOClient client, Object data, AckRequest ackRequest) {
+            public void onConnect(SocketIOClient client) {
+                System.out.println(client.getSessionId());
                 bot.addClient(client);
                 if (!isGameStarted) {
                     bot.initialize();
                     bot.startGame();
-                    System.out.println("Action received");
                     isGameStarted = true;
                 }
             }
@@ -40,6 +42,7 @@ public class SocketServer {
             }
         });
         server.start();
+        System.out.println("Server is running in port: "+ PORT);
     }
 
 }
